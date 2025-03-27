@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+
+// Import your custom font
+const myCustomFont = localFont({
+  src:  "../fonts/FmlComics-Regular.ttf",
+  // Optionally, specify the CSS variable if you want to use it in your styles:
+  variable: "--font-fml",
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,9 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+       <body className={`${myCustomFont.className} antialiased`}>
         {children}
       </body>
     </html>
