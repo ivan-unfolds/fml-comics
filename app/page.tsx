@@ -1,131 +1,84 @@
 "use client";
 
-import { useState, useRef, FormEvent } from "react";
-import { upload } from "@vercel/blob/client";
-import { type PutBlobResult } from "@vercel/blob";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import localFont from "next/font/local";
+
+// Import your custom font
+const fmlFont = localFont({
+  src: "../fonts/FmlFat-Regular.ttf",
+  // Optionally, specify the CSS variable if you want to use it in your styles:
+  variable: "--font-fml",
+});
+
+interface Prophecy {
+  imageUrl: string;
+  participantName: string;
+  prophecyText: string;
+  timestamp?: number;
+}
 
 export default function Home() {
-  const [participantName, setParticipantName] = useState("");
-  const [status, setStatus] = useState("");
+  const [prophecies, setProphecies] = useState<Prophecy[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [uploadedUrl, setUploadedUrl] = useState("");
-  const [prophecyText, setProphecyText] = useState("");
 
-  const inputFileRef = useRef<HTMLInputElement>(null);
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setStatus("");
-    setProphecyText("");
-
-    try {
-      if (!inputFileRef.current?.files?.length) {
-        throw new Error("No file selected");
+  useEffect(() => {
+    const fetchProphecies = async () => {
+      try {
+        const res = await fetch("/api/getProphecies");
+        if (!res.ok) {
+          throw new Error("Failed to fetch");
+        }
+        const data = await res.json();
+        // Sort by timestamp descending if it exists, else keep as-is
+        data.sort(
+          (a: Prophecy, b: Prophecy) => (b.timestamp || 0) - (a.timestamp || 0)
+        );
+        setProphecies(data);
+      } catch (err: any) {
+        setError(err.message || "Error fetching prophecies");
+      } finally {
+        setLoading(false);
       }
-      const file = inputFileRef.current.files[0];
+    };
 
-      // Indicate that the upload is in progress
-      setStatus("Uploading image to Vercel Blob...");
-
-      // 1) Upload directly to Vercel Blob via ephemeral token from /api/uploadImage
-      const blobResult: PutBlobResult = await upload(file.name, file, {
-        access: "public",
-        handleUploadUrl: "/api/uploadImage",
-        clientPayload: JSON.stringify({
-          participantName,
-        }),
-      });
-
-      // If successful, store the final URL
-      setUploadedUrl(blobResult.url);
-      setStatus("Image uploaded. Generating prophecy...");
-
-      // 2) Generate prophecy with GPT-4 Vision on the server
-      const response = await fetch("/api/generateProphecy", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          participantName,
-          imageUrl: blobResult.url,
-        }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || "Error generating prophecy");
-      }
-
-      // Display prophecy text
-      setProphecyText(data.prophecyText);
-      setStatus("Prophecy generated!");
-    } catch (err: any) {
-      setError(err.message || "Upload / AI generation failed.");
-      setStatus("");
-    }
-  };
+    fetchProphecies();
+  }, []);
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6">
-      <h1 className="text-2xl font-bold mb-4">Admin/Host Upload</h1>
-
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-4 w-full max-w-sm"
-      >
-        <label htmlFor="name" className="flex flex-col">
-          <span className="font-medium mb-1">Participant Name:</span>
-          <input
-            id="name"
-            type="text"
-            value={participantName}
-            onChange={(e) => setParticipantName(e.target.value)}
-            className="border rounded p-2"
-            placeholder="Enter participant name"
-            required
-          />
-        </label>
-
-        <label htmlFor="file" className="flex flex-col">
-          <span className="font-medium mb-1">Select Hand Image:</span>
-          <input
-            id="file"
-            type="file"
-            ref={inputFileRef}
-            accept="image/*"
-            className="border rounded p-2"
-            required
-          />
-        </label>
-
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500"
-        >
-          Submit
-        </button>
-      </form>
-
-      {status && <p className="mt-4 text-green-600">{status}</p>}
-      {error && <p className="mt-4 text-red-600">{error}</p>}
-
-      {uploadedUrl && (
-        <div className="mt-4">
-          <p className="font-medium">Blob URL:</p>
-          <a
-            href={uploadedUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="underline text-blue-700"
-          >
-            {uploadedUrl}
-          </a>
-        </div>
-      )}
-
-      {prophecyText && (
-        <div className="mt-4 p-4 border rounded bg-gray-50 w-full max-w-sm">
-          <h2 className="font-semibold mb-2">Prophecy:</h2>
-          <p>{prophecyText}</p>
+    <main className="min-h-screen flex flex-col items-center p-4">
+      <h1 className={`${fmlFont.className} text-6xl font-bold mb-6 uppercase`}>
+        Palm Pilot
+      </h1>
+      {loading && <p>Loading...</p>}
+      {error && <p className="text-red-600">{error}</p>}
+      {!loading && !error && (
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-5xl overflow-y-auto">
+          {prophecies.map((card, idx) => (
+            <div
+              key={idx}
+              className="bg-white border  text-black p-4 rounded shadow-sm"
+            >
+              <div className={`${fmlFont.className} text-3xl uppercase`}>
+                {card.participantName}
+              </div>
+              <div className="my-4 mx-[-16px]">
+                <div className="relative">
+                  <Image
+                    src={card.imageUrl}
+                    alt={`${card.participantName}-img`}
+                    layout="responsive"
+                    width={400}
+                    height={400}
+                    className="object-contain grayscale w-full contrast-150 brightness-125"
+                  />
+                  {/* <div className="absolute inset-0 bg-purple-600 opacity-10"></div> */}
+                </div>
+              </div>
+              <p className="text-sm font-sans">{card.prophecyText}</p>
+            </div>
+          ))}
         </div>
       )}
     </main>
