@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, FormEvent } from "react";
-import { upload, PutBlobResult } from "@vercel/blob/client";
+import { upload } from "@vercel/blob/client";
+import { type PutBlobResult } from "@vercel/blob";
 
 export default function Home() {
   const [participantName, setParticipantName] = useState("");
@@ -26,14 +27,14 @@ export default function Home() {
 
       // Indicate that the upload is in progress
       setStatus("Uploading image to Vercel Blob...");
-      
+
       // 1) Upload directly to Vercel Blob via ephemeral token from /api/uploadImage
       const blobResult: PutBlobResult = await upload(file.name, file, {
         access: "public",
         handleUploadUrl: "/api/uploadImage",
-        clientPayload: {
+        clientPayload: JSON.stringify({
           participantName,
-        },
+        }),
       });
 
       // If successful, store the final URL
@@ -46,8 +47,8 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           participantName,
-          imageUrl: blobResult.url
-        })
+          imageUrl: blobResult.url,
+        }),
       });
       const data = await response.json();
       if (!response.ok) {
