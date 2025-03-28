@@ -63,14 +63,18 @@ export default function BoardPage() {
               <div className={`${fmlFont.className} text-3xl uppercase`}>
                 {card.participantName}
               </div>
-              <div className="my-4">
-                <Image
-                  src={card.imageUrl}
-                  alt={`${card.participantName}-img`}
-                  width={100}
-                  height={100}
-                  className="object-contain"
-                />
+              <div className="my-4 mx-[-16px]">
+                <div className="relative">
+                  <Image
+                    src={card.imageUrl}
+                    alt={`${card.participantName}-img`}
+                    layout="responsive"
+                    width={400}
+                    height={400}
+                    className="object-contain grayscale w-full"
+                  />
+                  {/* <div className="absolute inset-0 bg-purple-600 opacity-10"></div> */}
+                </div>
               </div>
               <p className="text-sm font-sans">{card.prophecyText}</p>
             </div>
