@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 
+interface ClientPayload {
+  participantName?: string;
+}
+
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as HandleUploadBody;
@@ -9,11 +13,17 @@ export async function POST(request: Request) {
       body,
       request,
       onBeforeGenerateToken: async (pathname, clientPayload) => {
+        const payload = clientPayload as ClientPayload;
         // Optional: implement authentication/authorization here
         return {
-          allowedContentTypes: ["image/jpeg", "image/png", "image/gif", "image/jpg"],
+          allowedContentTypes: [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/jpg",
+          ],
           tokenPayload: JSON.stringify({
-            participantName: clientPayload?.participantName || "Unknown",
+            participantName: payload?.participantName || "Unknown",
           }),
         };
       },
