@@ -1,25 +1,6 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import DevTools from "./components/DevTools";
-
-// Import your custom font
-const myCustomFont = localFont({
-  src: "../fonts/FmlComics-Regular.ttf",
-  // Optionally, specify the CSS variable if you want to use it in your styles:
-  variable: "--font-fml",
-});
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "FML Comics",
@@ -33,7 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${myCustomFont.className} antialiased`}>
+      <body
+        className={`antialiased bg-[url('/background-chikaboo.jpg')] bg-cover bg-center bg-fixed min-h-screen bg-no-repeat`}
+      >
         {children}
         <DevTools />
       </body>

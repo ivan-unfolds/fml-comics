@@ -2,6 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import localFont from "next/font/local";
+
+// Import your custom font
+const fmlFont = localFont({
+  src: "../../fonts/FmlFat-Regular.ttf",
+  // Optionally, specify the CSS variable if you want to use it in your styles:
+  variable: "--font-fml",
+});
 
 interface Prophecy {
   imageUrl: string;
@@ -24,7 +32,9 @@ export default function BoardPage() {
         }
         const data = await res.json();
         // Sort by timestamp descending if it exists, else keep as-is
-        data.sort((a: Prophecy, b: Prophecy) => (b.timestamp || 0) - (a.timestamp || 0));
+        data.sort(
+          (a: Prophecy, b: Prophecy) => (b.timestamp || 0) - (a.timestamp || 0)
+        );
         setProphecies(data);
       } catch (err: any) {
         setError(err.message || "Error fetching prophecies");
@@ -38,7 +48,9 @@ export default function BoardPage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center p-4">
-      <h1 className="text-2xl font-bold mb-6">Communal Board</h1>
+      <h1 className={`${fmlFont.className} text-6xl font-bold mb-6 uppercase`}>
+        Communal Board
+      </h1>
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-600">{error}</p>}
       {!loading && !error && (
@@ -46,9 +58,11 @@ export default function BoardPage() {
           {prophecies.map((card, idx) => (
             <div
               key={idx}
-              className="bg-yellow-100 border border-yellow-300 text-black p-4 rounded shadow-sm"
+              className="bg-white border  text-black p-4 rounded shadow-sm"
             >
-              <div className="text-lg font-semibold">{card.participantName}</div>
+              <div className={`${fmlFont.className} text-3xl uppercase`}>
+                {card.participantName}
+              </div>
               <div className="my-4">
                 <Image
                   src={card.imageUrl}
@@ -58,7 +72,7 @@ export default function BoardPage() {
                   className="object-contain"
                 />
               </div>
-              <p className="text-sm">{card.prophecyText}</p>
+              <p className="text-sm font-sans">{card.prophecyText}</p>
             </div>
           ))}
         </div>
