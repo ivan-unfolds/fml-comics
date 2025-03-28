@@ -13,8 +13,15 @@ export async function POST(request: Request) {
       body,
       request,
       onBeforeGenerateToken: async (pathname, clientPayload) => {
-        const payload = clientPayload as ClientPayload;
-        // Optional: implement authentication/authorization here
+        let payload: ClientPayload = {};
+        if (clientPayload) {
+          try {
+            payload = JSON.parse(clientPayload) as ClientPayload;
+          } catch (e) {
+            console.error("Failed to parse client payload:", e);
+          }
+        }
+
         return {
           allowedContentTypes: [
             "image/jpeg",
