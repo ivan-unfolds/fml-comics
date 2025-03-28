@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import DevTools from "./components/DevTools";
 
 // Import your custom font
 const myCustomFont = localFont({
@@ -34,6 +35,7 @@ export default function RootLayout({
     <html lang="en">
        <body className={`${myCustomFont.className} antialiased`}>
         {children}
+        <DevTools />
       </body>
     </html>
   );
