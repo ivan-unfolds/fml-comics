@@ -1,20 +1,22 @@
 "use client";
 
 import { useState, useRef, FormEvent } from "react";
-import { type PutBlobResult } from '@vercel/blob';
-import { upload  } from "@vercel/blob/client";
+import { upload, PutBlobResult } from "@vercel/blob/client";
 
 export default function Home() {
   const [participantName, setParticipantName] = useState("");
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
   const [uploadedUrl, setUploadedUrl] = useState("");
+  const [prophecyText, setProphecyText] = useState("");
+
   const inputFileRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     setStatus("");
+    setProphecyText("");
 
     try {
       if (!inputFileRef.current?.files?.length) {
@@ -23,22 +25,40 @@ export default function Home() {
       const file = inputFileRef.current.files[0];
 
       // Indicate that the upload is in progress
-      setStatus("Uploading...");
-
-      // Upload directly to Vercel Blob, specifying our serverless route for token generation
+      setStatus("Uploading image to Vercel Blob...");
+      
+      // 1) Upload directly to Vercel Blob via ephemeral token from /api/uploadImage
       const blobResult: PutBlobResult = await upload(file.name, file, {
         access: "public",
         handleUploadUrl: "/api/uploadImage",
-        clientPayload: JSON.stringify({
+        clientPayload: {
           participantName,
-        }),
+        },
       });
 
       // If successful, store the final URL
       setUploadedUrl(blobResult.url);
-      setStatus("Upload successful!");
+      setStatus("Image uploaded. Generating prophecy...");
+
+      // 2) Generate prophecy with GPT-4 Vision on the server
+      const response = await fetch("/api/generateProphecy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          participantName,
+          imageUrl: blobResult.url
+        })
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Error generating prophecy");
+      }
+
+      // Display prophecy text
+      setProphecyText(data.prophecyText);
+      setStatus("Prophecy generated!");
     } catch (err: any) {
-      setError(err.message || "Upload failed.");
+      setError(err.message || "Upload / AI generation failed.");
       setStatus("");
     }
   };
@@ -86,12 +106,25 @@ export default function Home() {
 
       {status && <p className="mt-4 text-green-600">{status}</p>}
       {error && <p className="mt-4 text-red-600">{error}</p>}
+
       {uploadedUrl && (
         <div className="mt-4">
           <p className="font-medium">Blob URL:</p>
-          <a href={uploadedUrl} target="_blank" rel="noreferrer" className="underline text-blue-700">
+          <a
+            href={uploadedUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="underline text-blue-700"
+          >
             {uploadedUrl}
           </a>
+        </div>
+      )}
+
+      {prophecyText && (
+        <div className="mt-4 p-4 border rounded bg-gray-50 w-full max-w-sm">
+          <h2 className="font-semibold mb-2">Prophecy:</h2>
+          <p>{prophecyText}</p>
         </div>
       )}
     </main>
