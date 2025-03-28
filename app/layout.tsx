@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`antialiased bg-[url('/background-chikaboo.jpg')] bg-cover bg-center bg-fixed min-h-screen bg-no-repeat`}
+        className={`antialiased bg-[url('/background-chikaboo.jpg')] bg-cover bg-center bg-fixed min-h-screen bg-no-repeat py-8`}
       >
         {children}
         <DevTools />
