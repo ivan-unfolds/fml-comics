@@ -49,7 +49,7 @@ export default function BoardPage() {
   return (
     <main className="min-h-screen flex flex-col items-center p-4">
       <h1 className={`${fmlFont.className} text-6xl font-bold mb-6 uppercase`}>
-        Communal Board
+        Palm Pilot
       </h1>
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-600">{error}</p>}

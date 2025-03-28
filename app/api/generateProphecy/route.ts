@@ -25,11 +25,11 @@ export async function POST(req: NextRequest) {
     const openai = new OpenAI({ apiKey: openAiApiKey });
 
     const systemPrompt =
-      "You are a whimsical fortune teller. Provide a playful prophecy based on the given palm image.";
+      "You are a mystical fortune teller with real palmistry knowledge, inspired by Alejandro Jodorowsky.";
     const userPrompt = [
       {
         type: "text" as const,
-        text: `Here's an image of the participant's palm. Please analyze it (creatively) and invent a whimsical prophecy:\n`,
+        text: ` Based on an image of a palm, craft a short, poetic prophecy (80-150 words). The reading should be 70% based on traditional palmistry (analyzing the heart line, head line, life line, fate line, and hand shape) and 30% surreal, cosmic wisdom. Blend real analysis with metaphors, adventure, and a sense of mystery. Start with a mystical emoji (🔮, 🌙, ✨) and end with another emoji or emoticon (◕‿◕, 🌟, ☀️). Make it feel profound yet playful, as if revealing a hidden truth of the universe.\n`,
       },
       {
         type: "image_url" as const,
