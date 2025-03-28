@@ -51,6 +51,55 @@ export default function Home() {
       <h1 className={`${fmlFont.className} text-6xl font-bold mb-6 uppercase`}>
         Palm Pilot
       </h1>
+
+      <div className="w-full max-w-3xl mb-12 bg-white border rounded-lg p-6 shadow-sm">
+        <Image
+          src="/palmistry.png"
+          alt="Palm Reading Guide"
+          className="rounded-lg mx-auto pb-5"
+          width={295}
+          height={332}
+        />
+        <div className="space-y-4 text-gray-700">
+          <h2
+            className={`${fmlFont.className} text-3xl text-center mb-4 uppercase`}
+          >
+            ✨ A Handy Guide to Palm Reading ✨
+          </h2>
+          <p className="text-center mb-6">
+            Your palm is a map of your journey—past, present, and future. Here's
+            what the major lines reveal:
+          </p>
+          <div className="space-y-3">
+            <p>
+              <span className="font-semibold">🖤 Heart Line</span> – The path of
+              love, emotions, and relationships. A deep curve? Passionate! A
+              straight line? Logical in love. Breaks? Heartaches and
+              transformations.
+            </p>
+            <p>
+              <span className="font-semibold">🧠 Head Line</span> – Your mind's
+              signature. A long, straight line means sharp logic, while a wavy
+              one signals creativity. The deeper, the stronger your focus.
+            </p>
+            <p>
+              <span className="font-semibold">🌿 Life Line</span> – Not about
+              lifespan, but life force! A bold curve means energy and
+              resilience, while a faint or fragmented one suggests multiple
+              reinventions.
+            </p>
+            <p>
+              <span className="font-semibold">⚡ Fate Line</span> (if visible) –
+              The road of destiny. A strong fate line suggests a clear path,
+              while a broken one shows twists, changes, and unexpected turns.
+            </p>
+          </div>
+          <p className="text-center mt-6">
+            Your hands tell a story—what do yours say? 🔮✨
+          </p>
+        </div>
+      </div>
+
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-600">{error}</p>}
       {!loading && !error && (
@@ -68,7 +117,6 @@ export default function Home() {
                   <Image
                     src={card.imageUrl}
                     alt={`${card.participantName}-img`}
-                    layout="responsive"
                     width={400}
                     height={400}
                     className="object-contain grayscale w-full contrast-150 brightness-125"
