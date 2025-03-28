@@ -3,6 +3,7 @@
 import { useState, useRef, FormEvent } from "react";
 import { upload } from "@vercel/blob/client";
 import { type PutBlobResult } from "@vercel/blob";
+import Link from "next/link";
 
 export default function AdminPage() {
   const [participantName, setParticipantName] = useState("");
@@ -66,6 +67,12 @@ export default function AdminPage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-6">
+      <Link
+        href="/"
+        className="absolute top-4 left-4 bg-white px-4 py-2 rounded-lg shadow-md text-blue-600 hover:text-blue-800 hover:bg-gray-50 transition-colors"
+      >
+        ← Back to Home
+      </Link>
       <h1 className="text-2xl font-bold mb-4">Admin/Host Upload</h1>
 
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
