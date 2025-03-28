@@ -1,3 +1,7 @@
+Below is the **updated `prompt_plan.md`** reflecting our switch to **Vercel Redis** instead of Vercel KV:
+
+---
+
 # `prompt_plan.md`
 
 ## 1. Initialize the Project & Basic Setup
@@ -31,21 +35,22 @@
 
 ---
 
-## 3. Implement a Serverless API to Fetch Real Data from Vercel KV
+## 3. Implement a Serverless API to Fetch Real Data from Vercel Redis
 
-**Goal**: Replace mock data with real data from KV.
+**Goal**: Replace mock data with real data from your Redis add-on.
 
 ### Steps & Potential Prompt
 
 1. **Create a serverless function** (e.g., in `api/getProphecies.js` or `pages/api/getProphecies.ts` if using Next.js) that:
-   - Connects to **Vercel KV**.
-   - Fetches **all** entries (or the stored IDs, then iterates to get each record).
-   - Returns them as JSON.
-2. In the frontend `Board` component, **fetch** from this new endpoint to display real data (initially, maybe we manually insert some test data in KV or do it via the console).
+   - **Connects** to your Redis instance (via the Vercel Redis Add-on).
+   - **Retrieves** all stored prophecy data. (Depending on your storage approach, you might fetch all keys and parse JSON, or store them in a structure like a list or hash.)
+   - **Returns** the data as JSON for the front end.
+2. In the frontend `Board` component, **fetch** from this new endpoint to display the data.
+3. Make sure to **pull** your environment variables locally using `vercel env pull` so your local dev environment can connect to Redis.
 
 **Prompt Example**:
 
-> **“Create a serverless function on Vercel named `getProphecies` that fetches all keys/values from Vercel KV and returns them as an array of { imageUrl, participantName, prophecyText, timestamp }. Update the `Board` component to call this endpoint and render the results.”**
+> **“Create a serverless function named `getProphecies` that connects to my Vercel Redis instance using node-redis. It should retrieve all stored prophecy data (each record might have \`imageUrl\`, \`participantName\`, \`prophecyText\`, \`timestamp\`) and return them as an array. Then update the \`Board\` component to call this endpoint and render the results.”**
 
 ---
 
@@ -63,7 +68,7 @@
    - Temporarily accept & store the image in **Vercel Blob**.
    - Return the blob URL.
 
-(We’ll handle AI calls in the next step.)
+_(We’ll handle AI calls in the next step.)_
 
 **Prompt Example**:
 
@@ -81,14 +86,14 @@
    - After uploading to Vercel Blob, calls **ChatGPT Vision** with the image URL.
    - Takes the returned description, feeds it + a creative prompt into **GPT-4** (or GPT-3.5).
    - Receives the final prophecy text.
-2. **Store** the new record (`{ imageUrl, participantName, prophecyText, timestamp }`) in **Vercel KV**.
+2. **Store** the new record (`{ imageUrl, participantName, prophecyText, timestamp }`) in **Redis**.
 3. Return the final data to the frontend.
 
 **Prompt Example**:
 
-> **“Update the `uploadImage` API endpoint to call ChatGPT’s image analysis endpoint with the blob URL. Take the returned description, then call GPT-4 with a whimsical palm-reading prompt. Store the resulting prophecy in Vercel KV along with the participant’s name and imageUrl. Return the prophecy text to the client.”**
+> **“Update the `uploadImage` API endpoint to call ChatGPT’s image analysis endpoint with the blob URL. Take the returned description, then call GPT-4 with a whimsical palm-reading prompt. Store the resulting prophecy in Redis along with the participant’s name and \`imageUrl\`. Return the prophecy text to the client.”**
 
-_(Note: You’d need the actual code or library calls for ChatGPT’s Vision and GPT-4. The specifics vary based on the API access method. You’ll also handle auth keys, environment variables, etc.)_
+_(Note: You’ll need the actual code or library calls for ChatGPT’s Vision and GPT-4. The specifics vary based on your API access method. You’ll also handle auth keys, environment variables, etc.)_
 
 ---
 
@@ -127,7 +132,7 @@ _(Note: You’d need the actual code or library calls for ChatGPT’s Vision and
 
 ## 8. Polishing & Styling
 
-**Goal**: Final pass for styling, basic error handling, and cleaning up.
+**Goal**: Final pass for styling, basic error handling, and cleanup.
 
 ### Steps & Potential Prompt
 
@@ -157,3 +162,7 @@ _(Note: You’d need the actual code or library calls for ChatGPT’s Vision and
 **Prompt Example**:
 
 > **“Deploy the project to Vercel. Test the entire flow manually with a real palm image, ensuring that the reading is generated and displayed in the communal board. Provide final fixes if any part breaks.”**
+
+---
+
+**End of Updated Plan**
