@@ -71,7 +71,7 @@ export default function BoardPage() {
                     layout="responsive"
                     width={400}
                     height={400}
-                    className="object-contain grayscale w-full"
+                    className="object-contain grayscale w-full contrast-150 brightness-125"
                   />
                   {/* <div className="absolute inset-0 bg-purple-600 opacity-10"></div> */}
                 </div>
